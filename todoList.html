@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Todo List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="images/favicon.ico" rel="shortcut icon">
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../stylesheets/all.css">
+  <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/solid.js" integrity="sha384-+Ga2s7YBbhOD6nie0DzrZpJes+b2K1xkpKxTFFcx59QmVPaSA8c7pycsNaFwUK6l" crossorigin="anonymous"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/regular.js" integrity="sha384-t7yHmUlwFrLxHXNLstawVRBMeSLcXTbQ5hsd0ifzwGtN7ZF7RZ8ppM7Ldinuoiif" crossorigin="anonymous"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/fontawesome.js" integrity="sha384-7ox8Q2yzO/uWircfojVuCQOZl+ZZBg2D2J5nkpLqzH1HY0C1dHlTKIbpRz/LG23c" crossorigin="anonymous"></script>    <script src="/javascripts/vendor.js"></script>
+
+  <style>
+    #app{
+      width: 80%;
+      margin: auto;
+      margin-top: 60px;
+      font-family: 微軟正黑體;
+    }
+  </style>
+</head>
+  
+<body class="bg-lighter">
+
+
+
+<div id="app">
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <span class="input-group-text" id="basic-addon1">待辦事項</span>
+    </div>
+
+    <!-- 新增資料 -->
+    <input type="text" class="form-control" placeholder="準備要做的任務"
+    @keyup.enter="addItem"
+    v-model="newItem">
+    <div class="input-group-append">
+      <button class="btn btn-primary" type="button"
+      @click="addItem">
+        新增</button>
+    </div>
+  </div>
+
+  <!-- 狀態篩選 -->
+  <div class="card text-center">
+    <div class="card-header">
+      <ul class="nav nav-tabs card-header-tabs">
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+          :class="{active : type == 'all'}"
+          @click.prevent="type = 'all'">
+          全部</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+          :class="{active : type == 'onGoing'}"
+          @click.prevent="type = 'onGoing'">
+            進行中</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+          :class="{active : type == 'finished'}"
+          @click.prevent="type = 'finished'">
+            已完成</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 列表清單 -->
+    <ul class="list-group list-group-flush text-left">
+      <li class="list-group-item"
+      v-for="(item, key) in filteredList"
+      @dblclick="editItem(item)">
+        <div class="d-flex"
+        v-if="item.id !== catchItem.id">
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input"
+            v-model="item.finished"
+            :id="item.id">
+            <label class="form-check-label"
+            :class="{'completed' : item.finished}"
+            :for="item.id">
+              {{ item.title }}
+            </label>
+          </div>
+          <button type="button" class="close ml-auto" aria-label="Close"
+          @click="removeItem(item)">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <input type="text" class="form-control"
+        v-model="catchTitle"
+        @keyup.esc="cancelEdit()"
+        @keyup.enter="sureEdit(item)"
+        v-if="item.id == catchItem.id">
+      </li>
+      <!-- <li class="list-group-item">
+        <input type="text" class="form-control">
+      </li> -->
+    </ul>
+    <div class="card-footer d-flex justify-content-between">
+      <span>還有 {{ unFinishItem }} 筆任務未完成</span>
+      <a href="#"
+      @click.prevent="removeAllItems">
+      清除所有任務</a>
+    </div>
+  </div>
+</div>
+
+<script>
+var app = new Vue({
+  el: '#app',
+  data: {
+    list:[
+      {
+        id:'1',
+        title: '寫一系列JS文章',
+        finished: false
+      },{
+        id:'2',
+        title: '寫一個訂票系統',
+        finished: false
+      }
+    ],
+    newItem: '',
+    type: 'all',
+    catchItem: {}, //設置一個新元素
+    catchTitle: ''
+  },
+  methods: {
+    addItem: function(){
+      var value = this.newItem.trim();
+      var timestemp = Math.floor(Date.now());
+      if(!value){
+        return;
+      }
+      this.list.push({
+        id: timestemp,
+        title: value,
+        finished: false
+      });
+      this.newItem = '';
+    },
+    editItem: function(item){
+      this.catchItem = item;
+      this.catchTitle = item.title;
+    },
+    cancelEdit: function(){
+      this.catchItem = {};
+      this.catchTitle = '';
+    },
+    sureEdit: function(item){
+      item.title = this.catchTitle;
+      this.catchTitle = '';
+      this.catchItem = {};
+    },
+    removeItem: function(whichItem){
+      //點擊刪除後傳出元件，但fn傳入元件時取另一個名子，不然的話會重複item.id === item.id
+      //或者是原始list迴圈跑出的個別資料換名稱
+
+      // 第一種
+      // var newIndex = '';
+      // this.list.forEach(function(item,key){
+      //   if (whichItem.id === item.id){ //傳入元件的id與原始list迴圈逐一比對
+      //     newIndex = key;
+      //   }
+      // });
+      // this.list.splice(newIndex, 1);
+
+      // 第二種
+      var newIndex = this.list.findIndex(function(item, key){
+        return whichItem.id === item.id;
+      });
+      this.list.splice(newIndex, 1);
+    },
+    removeAllItems: function(){
+      this.list = [];
+    }
+  },
+  computed: {
+    filteredList: function(){
+      if(this.type == 'all'){
+        return this.list;
+      }else if(this.type == 'onGoing'){
+        var newItems = [];
+        this.list.forEach(function(item){
+          if(!item.finished){
+            newItems.push(item);
+          }
+        });
+        return newItems;
+      }else if(this.type == 'finished'){
+        var newItems = [];
+        this.list.forEach(function(item){
+          if(item.finished){
+            newItems.push(item);
+          }
+        });
+        return newItems;
+      }
+    },
+    unFinishItem: function(){
+      var newItems = [];
+      this.list.forEach(function(item){
+        if(!item.finished){
+          newItems.push(item);
+        }
+      });
+      return newItems.length;
+    }
+  },
+});
+</script>
+
+<style>
+.completed {
+  text-decoration: line-through
+}
+</style>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
