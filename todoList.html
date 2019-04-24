@@ -18,12 +18,13 @@
       margin-top: 60px;
       font-family: 微軟正黑體;
     }
+    .completed {
+      text-decoration: line-through
+    }
   </style>
 </head>
   
 <body class="bg-lighter">
-
-
 
 <div id="app">
   <div class="input-group mb-3">
@@ -108,6 +109,7 @@
   </div>
 </div>
 
+</body>
 <script>
 var app = new Vue({
   el: '#app',
@@ -212,15 +214,4 @@ var app = new Vue({
   },
 });
 </script>
-
-<style>
-.completed {
-  text-decoration: line-through
-}
-</style>
-
-        </div>
-      </div>
-    </div>
-  </body>
 </html>
