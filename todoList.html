@@ -6,6 +6,7 @@
   <link href="images/favicon.ico" rel="shortcut icon">
   <meta charset="UTF-8">
   <link rel="stylesheet" href="stylesheets/all.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
   <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/solid.js" integrity="sha384-+Ga2s7YBbhOD6nie0DzrZpJes+b2K1xkpKxTFFcx59QmVPaSA8c7pycsNaFwUK6l" crossorigin="anonymous"></script>
   <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/regular.js" integrity="sha384-t7yHmUlwFrLxHXNLstawVRBMeSLcXTbQ5hsd0ifzwGtN7ZF7RZ8ppM7Ldinuoiif" crossorigin="anonymous"></script>
   <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/fontawesome.js" integrity="sha384-7ox8Q2yzO/uWircfojVuCQOZl+ZZBg2D2J5nkpLqzH1HY0C1dHlTKIbpRz/LG23c" crossorigin="anonymous"></script>
@@ -20,6 +21,70 @@
     }
     .completed {
       text-decoration: line-through
+    }
+    .ml-10{
+      margin-left: 10px;
+    }
+    .form-control {
+      display: inline-block;
+      width: 88%;
+    }
+    .list-group-item{
+      position: relative;
+    }
+    .addItemAni{
+      animation:rightIn 1s cubic-bezier(0.19, 1, 0.22, 1) 0s 1 normal;
+    }
+    .outItemAni{
+      animation:leftOut 1s cubic-bezier(0.19, 1, 0.22, 1) 0s 1 normal;
+    }
+    @keyframes rightIn{
+      0%{
+        left: 200px;
+        opacity: 0;
+      }
+      100%{
+        left: 0px;
+        opacity: 1;
+      }
+    }
+    @keyframes leftOut{
+      0%{
+        left: 0px;
+        opacity: 1;
+      }
+      100%{
+        left: -200px;
+        opacity: 0;
+      }
+    }
+    .ulRange{
+      overflow: hidden;
+    }
+    button.btnIcon{
+      float: right;
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1;
+      color: #000;
+      text-shadow: 0 1px 0 #fff;
+      opacity: .5;
+      padding: 0;
+      background-color: transparent;
+      border: 0;
+      -webkit-appearance: none;
+    }
+    button.edit:hover,button.creat:hover{
+      color: #4fc08d;
+      cursor: pointer;
+    }
+    button.close:hover,button.cancel:hover{
+      color: rgb(255, 0, 0);
+      cursor: pointer;
+    }
+    button.cancel,button.creat{
+      display: inline-block;
+      margin-top: 7px;
     }
   </style>
 </head>
@@ -69,8 +134,9 @@
     </div>
 
     <!-- 列表清單 -->
-    <ul class="list-group list-group-flush text-left">
+    <ul class="list-group list-group-flush text-left ulRange">
       <li class="list-group-item"
+      :class="item.itemAni"
       v-for="(item, key) in filteredList"
       @dblclick="editItem(item)">
         <div class="d-flex"
@@ -85,9 +151,13 @@
               {{ item.title }}
             </label>
           </div>
-          <button type="button" class="close ml-auto" aria-label="Close"
-          @click="removeItem(item)">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="btnIcon edit ml-auto" aria-label="Edit">
+            <span aria-hidden="true"
+            @click="editItem(item)"><i class="far fa-edit"></i></span>
+          </button>
+          <button type="button" class="btnIcon close ml-10" aria-label="Close">
+            <span aria-hidden="true"
+            @click="removeItem(item)"><i class="far fa-trash-alt"></i></span>
           </button>
         </div>
         <input type="text" class="form-control"
@@ -95,6 +165,16 @@
         @keyup.esc="cancelEdit()"
         @keyup.enter="sureEdit(item)"
         v-if="item.id == catchItem.id">
+        <button type="button" class="btnIcon cancel ml-10" aria-label="cancel"
+        v-if="item.id == catchItem.id">
+          <span aria-hidden="true"
+          @click="cancelEdit()"><i class="far fa-window-close"></i></span>
+        </button>
+        <button type="button" class="btnIcon creat" aria-label="creat"
+        v-if="item.id == catchItem.id">
+          <span aria-hidden="true"
+          @click="sureEdit(item)"><i class="far fa-check-circle"></i></span>
+        </button>
       </li>
       <!-- <li class="list-group-item">
         <input type="text" class="form-control">
@@ -118,11 +198,13 @@ var app = new Vue({
       {
         id:'1',
         title: '寫一系列JS文章',
-        finished: false
+        finished: false,
+        itemAni: 'normal'
       },{
         id:'2',
         title: '寫一個訂票系統',
-        finished: false
+        finished: false,
+        itemAni: 'normal'
       }
     ],
     newItem: '',
@@ -140,7 +222,8 @@ var app = new Vue({
       this.list.push({
         id: timestemp,
         title: value,
-        finished: false
+        finished: false,
+        itemAni: 'addItemAni'
       });
       this.newItem = '';
     },
@@ -158,6 +241,10 @@ var app = new Vue({
       this.catchItem = {};
     },
     removeItem: function(whichItem){
+      var self = this;
+      // self.list.forEach(function(item){
+      //   item.itemAni = 'normal';  
+      // });
       //點擊刪除後傳出元件，但fn傳入元件時取另一個名子，不然的話會重複item.id === item.id
       //或者是原始list迴圈跑出的個別資料換名稱
 
@@ -171,31 +258,53 @@ var app = new Vue({
       // this.list.splice(newIndex, 1);
 
       // 第二種
-      var newIndex = this.list.findIndex(function(item, key){
+      var newIndex = self.list.findIndex(function(item, key){
         return whichItem.id === item.id;
       });
-      this.list.splice(newIndex, 1);
+      whichItem.itemAni = "outItemAni";
+      var timeOut = setTimeout(() => {
+        self.list.splice(newIndex, 1);
+      }, 500)
+      // self.list.splice(newIndex, 1);
     },
     removeAllItems: function(){
-      this.list = [];
+      var self = this;
+      self.list.forEach(function(item){
+        item.itemAni = 'outItemAni';
+      });
+      var timeOut = setTimeout(() => {
+        self.list = [];
+      }, 500)
     }
   },
   computed: {
     filteredList: function(){
       if(this.type == 'all'){
-        return this.list;
+        var newItems = [];
+        this.list.forEach(function(item){
+          var timeOut = setTimeout(() => {
+            item.itemAni = 'normal';
+          }, 1100)
+          newItems.push(item);
+        });
+        return newItems;
       }else if(this.type == 'onGoing'){
         var newItems = [];
         this.list.forEach(function(item){
           if(!item.finished){
+            var timeOut = setTimeout(() => {
+              item.itemAni = 'normal';
+            }, 1100)
             newItems.push(item);
           }
         });
         return newItems;
       }else if(this.type == 'finished'){
         var newItems = [];
+        // this.list.itemAni = 'normal';
         this.list.forEach(function(item){
           if(item.finished){
+            item.itemAni = 'normal';
             newItems.push(item);
           }
         });
