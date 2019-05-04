@@ -1,0 +1,73 @@
+#app{
+    width: 80%;
+    margin: auto;
+    margin-top: 60px;
+    font-family: 微軟正黑體;
+}
+.completed {
+text-decoration: line-through
+}
+.ml-10{
+margin-left: 10px;
+}
+.form-control {
+display: inline-block;
+width: 88%;
+}
+.list-group-item{
+position: relative;
+}
+.addItemAni{
+animation:rightIn 1s cubic-bezier(0.19, 1, 0.22, 1) 0s 1 normal;
+}
+.outItemAni{
+animation:leftOut 1s cubic-bezier(0.19, 1, 0.22, 1) 0s 1 normal;
+}
+@keyframes rightIn{
+0%{
+    left: 200px;
+    opacity: 0;
+}
+100%{
+    left: 0px;
+    opacity: 1;
+}
+}
+@keyframes leftOut{
+0%{
+    left: 0px;
+    opacity: 1;
+}
+100%{
+    left: -200px;
+    opacity: 0;
+}
+}
+.ulRange{
+overflow: hidden;
+}
+button.btnIcon{
+float: right;
+font-size: 1.5rem;
+font-weight: 700;
+line-height: 1;
+color: #000;
+text-shadow: 0 1px 0 #fff;
+opacity: .5;
+padding: 0;
+background-color: transparent;
+border: 0;
+-webkit-appearance: none;
+}
+button.edit:hover,button.creat:hover{
+color: #4fc08d;
+cursor: pointer;
+}
+button.close:hover,button.cancel:hover{
+color: rgb(255, 0, 0);
+cursor: pointer;
+}
+button.cancel,button.creat{
+display: inline-block;
+margin-top: 7px;
+}
