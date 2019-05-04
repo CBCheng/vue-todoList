@@ -24,24 +24,24 @@ animation:rightIn 1s cubic-bezier(0.19, 1, 0.22, 1) 0s 1 normal;
 animation:leftOut 1s cubic-bezier(0.19, 1, 0.22, 1) 0s 1 normal;
 }
 @keyframes rightIn{
-0%{
-    left: 200px;
-    opacity: 0;
-}
-100%{
-    left: 0px;
-    opacity: 1;
-}
+    0%{
+        left: 200px;
+        opacity: 0;
+    }
+    100%{
+        left: 0px;
+        opacity: 1;
+    }
 }
 @keyframes leftOut{
-0%{
-    left: 0px;
-    opacity: 1;
-}
-100%{
-    left: -200px;
-    opacity: 0;
-}
+    0%{
+        left: 0px;
+        opacity: 1;
+    }
+    100%{
+        left: -200px;
+        opacity: 0;
+    }
 }
 .ulRange{
 overflow: hidden;
@@ -70,4 +70,19 @@ cursor: pointer;
 button.cancel,button.creat{
 display: inline-block;
 margin-top: 7px;
+}
+@media screen and (min-width: 960px){
+    #app{
+        width: 60%;
+    }
+}
+@media screen and (min-width: 1080px){
+    #app{
+        width: 50%;
+    }
+}
+@media screen and (min-width: 1920px){
+    #app{
+        width: 45%;
+    }
 }

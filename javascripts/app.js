@@ -110,6 +110,9 @@ var app = new Vue({
                 var newItems = [];
                 // this.list.itemAni = 'normal';
                 this.list.forEach(function(item){
+                if(!item.finished){
+                    item.itemAni = 'normal';
+                }
                 if(item.finished){
                     item.itemAni = 'normal';
                     newItems.push(item);
